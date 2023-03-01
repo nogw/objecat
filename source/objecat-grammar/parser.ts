@@ -1,25 +1,4 @@
-export {
-  ExprVariable,
-  ExprBoolean,
-  ExprInteger,
-  Expression,
-  ExprGet,
-  ExprLogical,
-  ExprAssign,
-  ExprSet,
-  ExprBinary,
-  ExprUnary,
-} from '../objecat-abstract';
-
 import {
-  StmtExpression,
-  StmtVariable,
-  StmtFunction,
-  StmtReturn,
-  StmtBlock,
-  StmtClass,
-  StmtIf,
-  Statement,
   Expression,
   ExprVariable,
   ExprLogical,
@@ -36,6 +15,17 @@ import {
   ExprInteger,
 } from '../objecat-abstract';
 
+import {
+  StmtExpression,
+  StmtVariable,
+  StmtFunction,
+  StmtReturn,
+  StmtBlock,
+  StmtClass,
+  StmtIf,
+  Statement,
+} from '../objecat-abstract';
+
 import { EToken, Token } from './token';
 
 export class Parser {
@@ -46,7 +36,7 @@ export class Parser {
     this.tokens = tokens;
   }
 
-  parse() {
+  parse(): Statement[] {
     const statements = Array<Statement>();
 
     while (!this.isAtEnd()) {
@@ -270,7 +260,7 @@ export class Parser {
     throw new Error(`Expect expression but got ${this.peek()}`);
   }
 
-  private declaration() {
+  private declaration(): Statement {
     try {
       if (this.match(EToken.VAR)) {
         return this.stmtVariable();
@@ -284,7 +274,7 @@ export class Parser {
     }
   }
 
-  private statement() {
+  private statement(): Statement {
     if (this.match(EToken.IF)) return this.stmtIf();
     if (this.match(EToken.FUN)) return this.stmtFunction('function');
     if (this.match(EToken.CLASS)) return this.stmtClass();
@@ -367,7 +357,6 @@ export class Parser {
 
   private stmtFunction(kind: string): Statement {
     const prev = this.previous();
-
     const name = this.consume(EToken.IDENTIFIER, `Expect ${kind} identifier.`);
 
     this.consume(EToken.LEFT_PAREN, `Expect '(' after ${kind} identifier.`);
@@ -389,8 +378,8 @@ export class Parser {
     this.consume(EToken.LEFT_BRACE, `Expect '{' before ${kind} body.`);
 
     const body = this.stmtBlock();
-
     const after = this.previous();
+
     const range = prev.range.mix(after.range);
     return new StmtFunction(name, params, body, range);
   }
@@ -425,11 +414,11 @@ export class Parser {
     return new StmtExpression(expr, range);
   }
 
-  private isAtEnd() {
+  private isAtEnd(): boolean {
     return this.peek().type == EToken.EOF;
   }
 
-  private match(...tokens: EToken[]) {
+  private match(...tokens: EToken[]): boolean {
     for (let i = 0; i < tokens.length; i++) {
       if (this.check(tokens[i])) {
         this.advance();
@@ -440,7 +429,7 @@ export class Parser {
     return false;
   }
 
-  private consume(token: EToken, message: string) {
+  private consume(token: EToken, message: string): Token {
     if (this.check(token)) {
       return this.advance();
     }
@@ -448,7 +437,7 @@ export class Parser {
     throw new Error(`${this.peek()} ${message}`);
   }
 
-  private check(token: EToken) {
+  private check(token: EToken): boolean {
     if (this.isAtEnd()) {
       return false;
     }
@@ -456,13 +445,13 @@ export class Parser {
     return this.peek().type === token;
   }
 
-  private advance() {
+  private advance(): Token {
     if (!this.isAtEnd()) this.current++;
 
     return this.previous();
   }
 
-  private peek() {
+  private peek(): Token {
     const token = this.tokens.at(this.current);
 
     if (!token) {
@@ -472,7 +461,7 @@ export class Parser {
     return token;
   }
 
-  private previous() {
+  private previous(): Token {
     const token = this.tokens.at(this.current - 1);
 
     if (!token) {
@@ -482,7 +471,7 @@ export class Parser {
     return token;
   }
 
-  private synchronize() {
+  private synchronize(): void {
     this.advance();
 
     while (this.isAtEnd()) {
