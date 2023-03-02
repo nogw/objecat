@@ -40,7 +40,7 @@ export enum EToken {
   TINT,
   TBOOL,
   TUNIT,
-  TARROW,
+  ARROW,
   EOF,
 }
 

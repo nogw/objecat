@@ -20,6 +20,10 @@ import { ExprCall } from './ExprCall';
 import { ExprSuper } from './ExprSuper';
 import { ExprSelf } from './ExprSelf';
 
+import { TypeArrow, TypeBool, TypeInt, TypeUnit } from './Type';
+
+export type Type = TypeInt | TypeBool | TypeUnit | TypeArrow;
+
 export type Expression =
   | ExprGrouping
   | ExprVariable

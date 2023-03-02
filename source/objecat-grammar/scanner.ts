@@ -116,7 +116,7 @@ export class Scanner {
         break;
 
       case '-':
-        this.addToken(this.match('>') ? EToken.TARROW : EToken.MINUS, this.range(start));
+        this.addToken(this.match('>') ? EToken.ARROW : EToken.MINUS, this.range(start));
 
       case '!':
         this.addToken(this.match('=') ? EToken.BANG_EQUAL : EToken.BANG, this.range(start));

@@ -26,6 +26,9 @@ import {
   Statement,
 } from '../objecat-abstract';
 
+import { Type, TypeArrow, TypeBool, TypeInt, TypeUnit } from '../objecat-abstract';
+import { Annotation } from '../objecat-abstract/StmtFunction';
+
 import { EToken, Token } from './token';
 
 export class Parser {
@@ -369,11 +372,15 @@ export class Parser {
           throw new Error("Can't have more than 255 parameters.");
         }
 
-        params.push(this.consume(EToken.IDENTIFIER, 'Expect parameter name.'));
+        params.push(this.annotation());
       } while (this.match(EToken.COMMA));
     }
 
     this.consume(EToken.RIGHT_PAREN, `Expect ')' after parameters.`);
+
+    this.consume(EToken.RIGHT_PAREN, `Expect ':' after ')'.`);
+
+    const retty = this.typeArrow();
 
     this.consume(EToken.LEFT_BRACE, `Expect '{' before ${kind} body.`);
 
@@ -381,7 +388,17 @@ export class Parser {
     const after = this.previous();
 
     const range = prev.range.mix(after.range);
-    return new StmtFunction(name, params, body, range);
+    return new StmtFunction(name, params, body, range, retty);
+  }
+
+  private annotation(): Annotation {
+    const token = this.consume(EToken.IDENTIFIER, 'Expect parameter name.');
+
+    this.consume(EToken.IDENTIFIER, "Expect ':' after parameter.");
+
+    const annot = this.typeArrow();
+
+    return new Annotation(token, annot, token.range.mix(annot.range));
   }
 
   private stmtIf(): Statement {
@@ -492,5 +509,37 @@ export class Parser {
 
       this.advance();
     }
+  }
+
+  private typeArrow(): Type {
+    const left = this.type();
+
+    if (this.match(EToken.ARROW)) {
+      const right = this.type();
+      const range = left.range.mix(right.range);
+
+      return new TypeArrow(left, right, range);
+    }
+
+    return left;
+  }
+
+  private type(): Type {
+    if (this.match(EToken.TINT)) {
+      const prev = this.previous();
+      return new TypeInt(prev.range);
+    }
+
+    if (this.match(EToken.TBOOL)) {
+      const prev = this.previous();
+      return new TypeBool(prev.range);
+    }
+
+    if (this.match(EToken.TUNIT)) {
+      const prev = this.previous();
+      return new TypeUnit(prev.range);
+    }
+
+    throw new Error('todo');
   }
 }

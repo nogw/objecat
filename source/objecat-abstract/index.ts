@@ -1,5 +1,6 @@
 export { Expression } from './base';
 export { Statement } from './base';
+export { Type } from './base';
 
 export { StmtExpression } from './StmtExpression';
 export { StmtVariable } from './StmtVariable';
@@ -22,3 +23,5 @@ export { ExprCall } from './ExprCall';
 export { ExprSelf } from './ExprSelf';
 export { ExprGet } from './ExprGet';
 export { ExprSet } from './ExprSet';
+
+export { TypeArrow, TypeBool, TypeInt, TypeUnit } from './Type';
