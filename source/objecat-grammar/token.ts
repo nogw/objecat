@@ -37,6 +37,10 @@ export enum EToken {
   SELF,
   TRUE,
   VAR,
+  TINT,
+  TBOOL,
+  TUNIT,
+  TARROW,
   EOF,
 }
 
