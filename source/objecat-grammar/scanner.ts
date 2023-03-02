@@ -21,6 +21,9 @@ export class Scanner {
     ['super', EToken.SUPER],
     ['self', EToken.SELF],
     ['true', EToken.TRUE],
+    ['Int', EToken.TINT],
+    ['Bool', EToken.TBOOL],
+    ['Unit', EToken.TUNIT],
     ['var', EToken.VAR],
   ]);
 
@@ -104,10 +107,6 @@ export class Scanner {
         this.addToken(EToken.SEMICOLON, this.range(start));
         break;
 
-      case '-':
-        this.addToken(EToken.MINUS, this.range(start));
-        break;
-
       case '+':
         this.addToken(EToken.PLUS, this.range(start));
         break;
@@ -115,6 +114,9 @@ export class Scanner {
       case '*':
         this.addToken(EToken.STAR, this.range(start));
         break;
+
+      case '-':
+        this.addToken(this.match('>') ? EToken.TARROW : EToken.MINUS, this.range(start));
 
       case '!':
         this.addToken(this.match('=') ? EToken.BANG_EQUAL : EToken.BANG, this.range(start));
