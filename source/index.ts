@@ -1,5 +1,5 @@
 import { Scanner } from './objecat-grammar/scanner';
-import { Parser } from './objecat-grammar/parser';
+import { Parser } from './objecat-grammar';
 
 // test parser
 ((source: string) => {

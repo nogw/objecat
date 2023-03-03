@@ -1,4 +1,4 @@
-import { Range } from '../objecat-spanned';
+import { Range } from '../../objecat-spanned';
 
 export enum EToken {
   LEFT_PAREN,

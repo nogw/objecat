@@ -2,6 +2,8 @@ export { Expression } from './base';
 export { Statement } from './base';
 export { Type } from './base';
 
+export { Annotation } from './StmtFunction';
+
 export { StmtExpression } from './StmtExpression';
 export { StmtVariable } from './StmtVariable';
 export { StmtFunction } from './StmtFunction';

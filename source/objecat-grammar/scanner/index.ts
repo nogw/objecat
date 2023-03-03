@@ -1,4 +1,4 @@
-import { Range } from '../objecat-spanned';
+import { Range } from '../../objecat-spanned';
 import { EToken, Token, VToken } from './token';
 
 export class Scanner {

@@ -28,9 +28,9 @@ import {
 
 import { Type, TypeArrow, TypeBool, TypeInt, TypeVoid } from '../objecat-abstract';
 import { Annotation } from '../objecat-abstract/StmtFunction';
-import { Range } from '../objecat-spanned';
 
-import { EToken, Token } from './token';
+import { EToken, Token } from './scanner/token';
+import { Range } from '../objecat-spanned';
 
 export class Parser {
   private tokens: Array<Token>;
