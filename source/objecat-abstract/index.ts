@@ -24,4 +24,4 @@ export { ExprSelf } from './ExprSelf';
 export { ExprGet } from './ExprGet';
 export { ExprSet } from './ExprSet';
 
-export { TypeArrow, TypeBool, TypeInt, TypeUnit } from './Type';
+export { TypeArrow, TypeBool, TypeInt, TypeVoid } from './Type';

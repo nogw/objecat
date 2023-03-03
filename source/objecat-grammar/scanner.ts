@@ -23,7 +23,7 @@ export class Scanner {
     ['true', EToken.TRUE],
     ['Int', EToken.TINT],
     ['Bool', EToken.TBOOL],
-    ['Unit', EToken.TUNIT],
+    ['Void', EToken.TVOID],
     ['var', EToken.VAR],
   ]);
 
@@ -105,6 +105,10 @@ export class Scanner {
 
       case ';':
         this.addToken(EToken.SEMICOLON, this.range(start));
+        break;
+
+      case ':':
+        this.addToken(EToken.COLON, this.range(start));
         break;
 
       case '+':

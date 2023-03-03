@@ -5,7 +5,7 @@ export abstract class Type {
   abstract toString(): string;
 }
 
-export class TypeUnit extends Type {
+export class TypeVoid extends Type {
   constructor(readonly range: Range) {
     super();
   }

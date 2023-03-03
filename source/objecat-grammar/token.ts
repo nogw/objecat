@@ -10,6 +10,7 @@ export enum EToken {
   MINUS,
   PLUS,
   SEMICOLON,
+  COLON,
   SLASH,
   STAR,
   BANG,
@@ -39,7 +40,7 @@ export enum EToken {
   VAR,
   TINT,
   TBOOL,
-  TUNIT,
+  TVOID,
   ARROW,
   EOF,
 }

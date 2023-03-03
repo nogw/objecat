@@ -26,8 +26,9 @@ import {
   Statement,
 } from '../objecat-abstract';
 
-import { Type, TypeArrow, TypeBool, TypeInt, TypeUnit } from '../objecat-abstract';
+import { Type, TypeArrow, TypeBool, TypeInt, TypeVoid } from '../objecat-abstract';
 import { Annotation } from '../objecat-abstract/StmtFunction';
+import { Range } from '../objecat-spanned';
 
 import { EToken, Token } from './token';
 
@@ -321,6 +322,7 @@ export class Parser {
 
   private stmtReturn(): Statement {
     const keyword = this.previous();
+
     let expr = null;
 
     if (!this.check(EToken.SEMICOLON)) {
@@ -328,8 +330,8 @@ export class Parser {
     }
 
     const paren = this.consume(EToken.SEMICOLON, "Expect ';' after return value.");
-
     const range = keyword.range.mix(paren.range);
+
     return new StmtReturn(keyword, expr, range);
   }
 
@@ -353,8 +355,8 @@ export class Parser {
     }
 
     const paren = this.consume(EToken.RIGHT_BRACE, "Expect '}' before class body");
-
     const range = prev.range.mix(paren.range);
+
     return new StmtClass(name, superclass, methods, range);
   }
 
@@ -378,23 +380,22 @@ export class Parser {
 
     this.consume(EToken.RIGHT_PAREN, `Expect ')' after parameters.`);
 
-    this.consume(EToken.RIGHT_PAREN, `Expect ':' after ')'.`);
-
+    this.consume(EToken.COLON, `Expect ':' after ')'.`);
     const retty = this.typeArrow();
 
     this.consume(EToken.LEFT_BRACE, `Expect '{' before ${kind} body.`);
-
     const body = this.stmtBlock();
-    const after = this.previous();
 
+    const after = this.previous();
     const range = prev.range.mix(after.range);
+
     return new StmtFunction(name, params, body, range, retty);
   }
 
   private annotation(): Annotation {
     const token = this.consume(EToken.IDENTIFIER, 'Expect parameter name.');
 
-    this.consume(EToken.IDENTIFIER, "Expect ':' after parameter.");
+    this.consume(EToken.COLON, "Expect ':' after parameter.");
 
     const annot = this.typeArrow();
 
@@ -511,20 +512,21 @@ export class Parser {
     }
   }
 
-  private typeArrow(): Type {
-    const left = this.type();
+  private typeExpr(): Type {
+    if (this.match(EToken.LEFT_PAREN)) {
+      const prev = this.previous();
+      const left = this.typeExpr();
 
-    if (this.match(EToken.ARROW)) {
-      const right = this.type();
-      const range = left.range.mix(right.range);
+      this.consume(EToken.RIGHT_PAREN, "Expect ')' after arguments");
 
-      return new TypeArrow(left, right, range);
+      return this.typePartialArrow(left, prev.range);
     }
 
-    return left;
+    const left = this.typeBasic();
+    return this.typePartialArrow(left, left.range);
   }
 
-  private type(): Type {
+  private typeBasic(): Type {
     if (this.match(EToken.TINT)) {
       const prev = this.previous();
       return new TypeInt(prev.range);
@@ -535,11 +537,35 @@ export class Parser {
       return new TypeBool(prev.range);
     }
 
-    if (this.match(EToken.TUNIT)) {
+    if (this.match(EToken.TVOID)) {
       const prev = this.previous();
-      return new TypeUnit(prev.range);
+      return new TypeVoid(prev.range);
     }
 
     throw new Error('todo');
+  }
+
+  private typePartialArrow(left: Type, start: Range): Type {
+    if (this.match(EToken.ARROW)) {
+      const right = this.typeExpr();
+      const range = start.mix(right.location());
+
+      return new TypeArrow(left, right, range);
+    }
+
+    return left;
+  }
+
+  private typeArrow(): Type {
+    const left = this.typeExpr();
+
+    if (this.match(EToken.ARROW)) {
+      const right = this.typeExpr();
+      const range = left.range.mix(right.range);
+
+      return new TypeArrow(left, right, range);
+    }
+
+    return left;
   }
 }

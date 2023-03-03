@@ -10,7 +10,7 @@ import { Parser } from './objecat-grammar/parser';
   console.log(parser.parse());
 })(`
 class counter {
-  contructor(count) {
+  contructor(count: Int): Void {
     self.count = count;
   }
 }
